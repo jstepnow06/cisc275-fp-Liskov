@@ -1,39 +1,55 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@xyflow/react/dist/style.css";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { Container, Navbar, Nav } from "react-bootstrap";
+import { FlabbergastDashboard } from "./components/FlabbergastDashboard";
+import { FlabbergastProjectOverview } from "./components/FlabbergastProjectOverview";
+import { FlabbergastPageGraph } from "./components/FlabbergastPageGraph";
+import { FlabbergastPageEditor } from "./components/FlabbergastPageEditor";
+import { FlabbergastStateEditor } from "./components/FlabbergastStateEditor";
+import { FlabbergastExportPanel } from "./components/FlabbergastExportPanel";
 
 export function App() {
-    const [count, setCount] = useState(0);
-
     return (
-        <>
-            <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img
-                        src={reactLogo}
-                        className="logo react"
-                        alt="React logo"
+        <BrowserRouter>
+            <Navbar bg="dark" variant="dark" className="mb-3">
+                <Container>
+                    <Navbar.Brand as={Link} to="/">
+                        Drafter Designer
+                    </Navbar.Brand>
+                    <Nav>
+                        <Nav.Link as={Link} to="/">
+                            Dashboard
+                        </Nav.Link>
+                    </Nav>
+                </Container>
+            </Navbar>
+            <Container fluid>
+                <Routes>
+                    <Route path="/" element={<FlabbergastDashboard />} />
+                    <Route
+                        path="/project/:id"
+                        element={<FlabbergastProjectOverview />}
                     />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more. Final project
-                template.
-            </p>
-        </>
+                    <Route
+                        path="/project/:id/graph"
+                        element={<FlabbergastPageGraph />}
+                    />
+                    <Route
+                        path="/project/:id/page/:pageId"
+                        element={<FlabbergastPageEditor />}
+                    />
+                    <Route
+                        path="/project/:id/state"
+                        element={<FlabbergastStateEditor />}
+                    />
+                    <Route
+                        path="/project/:id/export"
+                        element={<FlabbergastExportPanel />}
+                    />
+                </Routes>
+            </Container>
+        </BrowserRouter>
     );
 }
 
