@@ -396,6 +396,9 @@ export function FlabbergastPageEditor() {
         return <Container className="py-3"><p>Page not found.</p></Container>;
     }
 
+    // Capture narrowed type so closures can reference it safely
+    const flabbergastCurrentPage: FlabbergastPage = flabbergastPage;
+
     function flabbergastPersistProject(updated: FlabbergastProject) {
         const all = flabbergastLoadProjects();
         const next = all.map((p) =>
@@ -419,16 +422,16 @@ export function FlabbergastPageEditor() {
     function flabbergastAddComponent(type: FlabbergastComponentType) {
         const comp = flabbergastCreateDefaultComponent(type);
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastComponents: [...flabbergastPage.flabbergastComponents, comp],
+            ...flabbergastCurrentPage,
+            flabbergastComponents: [...flabbergastCurrentPage.flabbergastComponents, comp],
         });
         setFlabbergastSelectedId(comp.flabbergastId);
     }
 
     function flabbergastUpdateComponent(updated: FlabbergastComponent) {
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastComponents: flabbergastPage.flabbergastComponents.map((c) =>
+            ...flabbergastCurrentPage,
+            flabbergastComponents: flabbergastCurrentPage.flabbergastComponents.map((c) =>
                 c.flabbergastId === updated.flabbergastId ? updated : c,
             ),
         });
@@ -436,8 +439,8 @@ export function FlabbergastPageEditor() {
 
     function flabbergastDeleteComponent(cId: string) {
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastComponents: flabbergastPage.flabbergastComponents.filter(
+            ...flabbergastCurrentPage,
+            flabbergastComponents: flabbergastCurrentPage.flabbergastComponents.filter(
                 (c) => c.flabbergastId !== cId,
             ),
         });
@@ -445,7 +448,7 @@ export function FlabbergastPageEditor() {
     }
 
     function flabbergastMoveComponent(cId: string, dir: -1 | 1) {
-        const comps = [...flabbergastPage.flabbergastComponents];
+        const comps = [...flabbergastCurrentPage.flabbergastComponents];
         const idx = comps.findIndex((c) => c.flabbergastId === cId);
         if (idx < 0) return;
         const next = idx + dir;
@@ -453,7 +456,7 @@ export function FlabbergastPageEditor() {
         const temp = comps[idx];
         comps[idx] = comps[next];
         comps[next] = temp;
-        flabbergastUpdatePage({ ...flabbergastPage, flabbergastComponents: comps });
+        flabbergastUpdatePage({ ...flabbergastCurrentPage, flabbergastComponents: comps });
     }
 
     function flabbergastAddAnnotation(kind: "if" | "for") {
@@ -463,15 +466,15 @@ export function FlabbergastPageEditor() {
             flabbergastDescription: "",
         };
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastAnnotations: [...flabbergastPage.flabbergastAnnotations, ann],
+            ...flabbergastCurrentPage,
+            flabbergastAnnotations: [...flabbergastCurrentPage.flabbergastAnnotations, ann],
         });
     }
 
     function flabbergastDeleteAnnotation(annId: string) {
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastAnnotations: flabbergastPage.flabbergastAnnotations.filter(
+            ...flabbergastCurrentPage,
+            flabbergastAnnotations: flabbergastCurrentPage.flabbergastAnnotations.filter(
                 (a) => a.flabbergastId !== annId,
             ),
         });
@@ -479,15 +482,15 @@ export function FlabbergastPageEditor() {
 
     function flabbergastUpdateAnnotation(annId: string, desc: string) {
         flabbergastUpdatePage({
-            ...flabbergastPage,
-            flabbergastAnnotations: flabbergastPage.flabbergastAnnotations.map(
+            ...flabbergastCurrentPage,
+            flabbergastAnnotations: flabbergastCurrentPage.flabbergastAnnotations.map(
                 (a) => a.flabbergastId === annId ? { ...a, flabbergastDescription: desc } : a,
             ),
         });
     }
 
     const flabbergastSelectedComp =
-        flabbergastPage.flabbergastComponents.find(
+        flabbergastCurrentPage.flabbergastComponents.find(
             (c) => c.flabbergastId === flabbergastSelectedId,
         ) ?? null;
 
@@ -496,7 +499,7 @@ export function FlabbergastPageEditor() {
     );
 
     const flabbergastPageStyle = flabbergastStyleToReact(
-        flabbergastPage.flabbergastPageStyle,
+        flabbergastCurrentPage.flabbergastPageStyle,
     );
 
     return (
@@ -512,7 +515,7 @@ export function FlabbergastPageEditor() {
                     {flabbergastProject.flabbergastName}
                 </Breadcrumb.Item>
                 <Breadcrumb.Item active>
-                    {flabbergastPage.flabbergastName}
+                    {flabbergastCurrentPage.flabbergastName}
                 </Breadcrumb.Item>
             </Breadcrumb>
 
@@ -521,10 +524,10 @@ export function FlabbergastPageEditor() {
                     <Form.Group className="mb-1">
                         <Form.Label className="small fw-bold">Page Name</Form.Label>
                         <Form.Control
-                            value={flabbergastPage.flabbergastName}
+                            value={flabbergastCurrentPage.flabbergastName}
                             onChange={(e) =>
                                 flabbergastUpdatePage({
-                                    ...flabbergastPage,
+                                    ...flabbergastCurrentPage,
                                     flabbergastName: e.target.value,
                                 })
                             }
@@ -537,10 +540,10 @@ export function FlabbergastPageEditor() {
                         <Form.Control
                             as="textarea"
                             rows={1}
-                            value={flabbergastPage.flabbergastDescription}
+                            value={flabbergastCurrentPage.flabbergastDescription}
                             onChange={(e) =>
                                 flabbergastUpdatePage({
-                                    ...flabbergastPage,
+                                    ...flabbergastCurrentPage,
                                     flabbergastDescription: e.target.value,
                                 })
                             }
@@ -556,10 +559,10 @@ export function FlabbergastPageEditor() {
                         <Form.Control
                             as="textarea"
                             rows={1}
-                            value={flabbergastPage.flabbergastStateChanges}
+                            value={flabbergastCurrentPage.flabbergastStateChanges}
                             onChange={(e) =>
                                 flabbergastUpdatePage({
-                                    ...flabbergastPage,
+                                    ...flabbergastCurrentPage,
                                     flabbergastStateChanges: e.target.value,
                                 })
                             }
@@ -570,7 +573,7 @@ export function FlabbergastPageEditor() {
 
             <Row className="mb-2 align-items-center">
                 <Col>
-                    {flabbergastPage.flabbergastAnnotations.map((ann) => (
+                    {flabbergastCurrentPage.flabbergastAnnotations.map((ann) => (
                         <Badge
                             key={ann.flabbergastId}
                             bg={ann.flabbergastKind === "if" ? "warning" : "info"}
@@ -644,7 +647,7 @@ export function FlabbergastPageEditor() {
                             padding: flabbergastPageStyle.padding ?? "8px",
                         }}
                     >
-                        {flabbergastPage.flabbergastComponents.map((comp) => (
+                        {flabbergastCurrentPage.flabbergastComponents.map((comp) => (
                             <FlabbergastComponentPreview
                                 key={comp.flabbergastId}
                                 comp={comp}
@@ -676,12 +679,12 @@ export function FlabbergastPageEditor() {
                                     <Form.Label className="small">{label}</Form.Label>
                                     <Form.Control
                                         size="sm"
-                                        value={flabbergastPage.flabbergastPageStyle[key]}
+                                        value={flabbergastCurrentPage.flabbergastPageStyle[key]}
                                         onChange={(e) =>
                                             flabbergastUpdatePage({
-                                                ...flabbergastPage,
+                                                ...flabbergastCurrentPage,
                                                 flabbergastPageStyle: {
-                                                    ...flabbergastPage.flabbergastPageStyle,
+                                                    ...flabbergastCurrentPage.flabbergastPageStyle,
                                                     [key]: e.target.value,
                                                 },
                                             })
