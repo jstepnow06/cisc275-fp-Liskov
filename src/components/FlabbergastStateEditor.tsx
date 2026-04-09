@@ -239,9 +239,16 @@ export function FlabbergastStateEditor() {
                 </Col>
             </Row>
 
-            <p className="text-muted small">
-                Your state class should have at least 4 attributes.
-            </p>
+            {flabbergastState.flabbergastAttributes.length < 4 && (
+                <p className="text-warning small">
+                    Warning: Your state class currently has{" "}
+                    {flabbergastState.flabbergastAttributes.length} attribute
+                    {flabbergastState.flabbergastAttributes.length === 1
+                        ? ""
+                        : "s"}
+                    . At least 4 are required.
+                </p>
+            )}
 
             <h5>State Attributes</h5>
             <Table bordered size="sm" className="mb-2">
